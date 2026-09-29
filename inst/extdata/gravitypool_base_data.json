@@ -1,0 +1,126 @@
+{
+  "hydraulics": {
+    "pipes": [
+      {
+        "material": "PVC_Sch40",
+        "nominal_inch": 2.0,
+        "outer_diameter_mm": 60.3,
+        "inner_diameter_mm": 52.0,
+        "wall_thickness_mm": 3.91,
+        "hazen_williams_c": 150
+      },
+      {
+        "material": "PVC_Sch80",
+        "nominal_inch": 2.0,
+        "outer_diameter_mm": 60.3,
+        "inner_diameter_mm": 48.6,
+        "wall_thickness_mm": 5.54,
+        "hazen_williams_c": 150
+      },
+      {
+        "material": "PVC_Sch40",
+        "nominal_inch": 3.0,
+        "outer_diameter_mm": 88.9,
+        "inner_diameter_mm": 77.3,
+        "wall_thickness_mm": 5.49,
+        "hazen_williams_c": 150
+      },
+      {
+        "material": "PVC_Sch80",
+        "nominal_inch": 3.0,
+        "outer_diameter_mm": 88.9,
+        "inner_diameter_mm": 72.8,
+        "wall_thickness_mm": 7.62,
+        "hazen_williams_c": 150
+      },
+      {
+        "material": "PVC_Sch40",
+        "nominal_inch": 4.0,
+        "outer_diameter_mm": 114.3,
+        "inner_diameter_mm": 101.6,
+        "wall_thickness_mm": 6.02,
+        "hazen_williams_c": 150
+      },
+      {
+        "material": "PVC_Sch80",
+        "nominal_inch": 4.0,
+        "outer_diameter_mm": 114.3,
+        "inner_diameter_mm": 96.2,
+        "wall_thickness_mm": 8.56,
+        "hazen_williams_c": 150
+      }
+    ],
+    "filters": [
+      {
+        "type": "sand_high_rate",
+        "description": "High-rate silica sand filter (0.4-0.8 mm media)",
+        "head_loss_psi_clean": 10.0,
+        "head_loss_psi_dirty": 20.0,
+        "m_h2o_equivalent_clean": 7.03,
+        "m_h2o_equivalent_dirty": 14.06
+      },
+      {
+        "type": "cartridge",
+        "description": "Pleated polyester cartridge element",
+        "head_loss_psi_clean": 3.0,
+        "head_loss_psi_dirty": 8.0,
+        "m_h2o_equivalent_clean": 2.11,
+        "m_h2o_equivalent_dirty": 5.62
+      },
+      {
+        "type": "biofilter_natural",
+        "description": "Natural wetland / gravel coarse regenerative biofilter",
+        "head_loss_psi_clean": 0.5,
+        "head_loss_psi_dirty": 2.0,
+        "m_h2o_equivalent_clean": 0.35,
+        "m_h2o_equivalent_dirty": 1.40
+      },
+      {
+        "type": "bypass_skimmer",
+        "description": "Low-pressure surface skimming and chemical dosing line",
+        "head_loss_psi_clean": 0.2,
+        "head_loss_psi_dirty": 0.5,
+        "m_h2o_equivalent_clean": 0.14,
+        "m_h2o_equivalent_dirty": 0.35
+      }
+    ],
+    "fluids": {
+      "water_20C": {
+        "temperature_c": 20.0,
+        "density_kg_m3": 998.20,
+        "dynamic_viscosity_mpa_s": 1.0016,
+        "kinematic_viscosity_cst": 1.0034
+      },
+      "water_28C": {
+        "temperature_c": 28.0,
+        "density_kg_m3": 996.23,
+        "dynamic_viscosity_mpa_s": 0.8324,
+        "kinematic_viscosity_cst": 0.8355
+      },
+      "water_30C": {
+        "temperature_c": 30.0,
+        "density_kg_m3": 995.65,
+        "dynamic_viscosity_mpa_s": 0.7972,
+        "kinematic_viscosity_cst": 0.8007
+      }
+    }
+  },
+  "lca_factors": {
+    "concrete_kg_co2e_per_kg": 0.15,
+    "concrete_kg_co2e_per_m3_est": 410.0,
+    "steel_rebar_kg_co2e_per_kg": 1.85,
+    "geomembrane_pvc_kg_co2e_per_kg": 2.41,
+    "lithium_battery_kg_co2e_per_kwh": 120.0,
+    "solar_module_mono_kg_co2e_per_kwp": 79.8,
+    "battery_lifespan_years": 6,
+    "grid_kg_co2e_per_kwh_mexico": 0.438
+  },
+  "financial_parameters_usd": {
+    "concrete_elevated_tank_per_m3": 150.0,
+    "lithium_battery_system_per_kwh": 350.0,
+    "solar_pump_dc_per_hp": 600.0,
+    "solar_pv_per_kwp": 850.0,
+    "bypass_valve_automation_package": 1800.0,
+    "default_exchange_rate_usd_mxn": 18.5
+  }
+}

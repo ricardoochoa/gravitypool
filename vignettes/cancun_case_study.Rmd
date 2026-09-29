@@ -1,0 +1,166 @@
+---
+title: "Estudio de Caso Cancún: Análisis Hidráulico, Ambiental y Financiero con gravitypool"
+author: "Ricardo Ochoa Sosa"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Estudio de Caso Cancún: Análisis Hidráulico, Ambiental y Financiero con gravitypool}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7.2,
+  fig.height = 4.8,
+  warning = TRUE,
+  message = FALSE
+)
+```
+
+## 1. Introducción y Contexto del Proyecto
+
+El diseño y operación de albercas semi-olímpicas y recreativas en climas tropicales (como Cancún, Quintana Roo) enfrenta tres desafíos simultáneos:
+
+1. **Altas Tasas de Recambio Normativo:** La temperatura del agua (28 °C a 30 °C) acelera la proliferación microbiana, exigiendo típicamente **4 recambios de volumen diarios** (turnovers) para cumplir con directrices sanitarias internacionales (DIN 19643).
+2. **Topografía Plana y Costo Estructural:** La península de Yucatán carece de desniveles orográficos naturales (desnivel = 0.0 m), requiriendo que cualquier altura hidrostática sea erigida mediante obra civil.
+3. **Penalización Tarifaria Extrema:** La operación ininterrumpida (24/7) de grupos de bombeo sobrepasa los umbrales de baja tensión, obligando a contratar la tarifa comercial **CFE GDMTH (Gran Demanda en Media Tensión Horaria)**, la cual castiga severamente el consumo en horario punta (18:00 a 22:00 hrs) y cobra cargos mensuales fijos por demanda máxima coincidente.
+
+El paquete `gravitypool` permite evaluar rigurosamente la sustitución o hibridación de estos sistemas frente a dos alternativas:
+- Almacenamiento electroquímico con bancos de baterías de litio-ferrofosfato (LiFePO4 / LFP).
+- Almacenamiento potencial gravitacional con bypass nocturno de baja presión.
+
+```{r setup}
+library(gravitypool)
+library(ggplot2)
+library(dplyr)
+```
+
+---
+
+## 2. Ingesta de Datos e Instanciación del Escenario (Clase S3)
+
+Cargamos el caso de estudio de Cancún preconfigurado a partir de los datos situacionales:
+
+```{r load_scenario}
+# Carga directa del archivo de investigación JSON integrado
+escenario_cancun <- load_pool_scenario()
+print(escenario_cancun)
+```
+
+---
+
+## 3. Simulación de Gravedad Pura (Demostración de Inviabilidad Estructural)
+
+La primera hipótesis analizada por un consultor novato suele ser: *"¿Podemos apagar las bombas en la noche y recircular todo el volumen por simple gravedad a través del filtro de arena existente?"*
+
+Durante las 14 horas nocturnas, la meta sanitaria exige circular aproximadamente **984 m³** de agua. Un filtro de arena de alta velocidad con lecho colmatado o sucio genera una pérdida de carga de **14.06 m.c.a. (20 PSI)**. Sumando la fricción de 45 metros de tubería PVC Cédula 40 de 3 pulgadas, el sistema requiere una columna de agua superior a 15 metros.
+
+Veamos qué ocurre al simular este régimen:
+
+```{r sim_pure_gravity}
+sim_pura <- simulate_gravity_system(escenario_cancun, mode = "pure_gravity")
+
+# Métricas del tanque elevado requerido
+sim_pura$tank_sizing
+```
+
+> **Alerta Estructural:** El paquete detecta que sostener más de **450 m³ (más de 500 toneladas totales con concreto y acero)** a **15 metros de altura** (equivalente a un edificio de 5 plantas) en terreno de roca caliza en zona de huracanes no solo incurre en un CAPEX prohibitivo (`r scales::dollar(sim_pura$capex_usd$total)`), sino que es estructuralmente inviable y ambientalmente destructivo debido a la huella de carbono del hormigón.
+
+Podemos visualizar este esquema físico:
+
+```{r plot_topo_pure}
+plot_topography(sim_pura)
+```
+
+---
+
+## 4. Simulación de la Solución Óptima: Bypass Gravitacional Híbrido
+
+Para superar esta barrera, `gravitypool` implementa el algoritmo de **Bypass Híbrido**:
+
+* **Operación Diurna (8 horas solares):** Bombas solares DC acopladas directamente a un arreglo fotovoltaico bombean el 80% del recambio diario (3.25 turnovers = 1,371 m³) forzando el paso a través del filtro de arena sílica durante las Horas Solares Pico (5.2 HSP), con **costo marginal cero de la red**.
+* **Operación Nocturna (14 horas):** Un arreglo automatizado de válvulas desvía el flujo fuera del filtro de arena hacia una línea de baja presión (desnatado superficial y dosificación química). Esto reduce la pérdida de carga a apenas **0.35 - 0.50 m.c.a.**, requiriendo un tanque buffer de tan solo **35 m³ a 3.2 metros de altura** (apoyable sobre la losa del cuarto de máquinas).
+
+```{r sim_hybrid}
+sim_bypass <- simulate_gravity_system(escenario_cancun, mode = "hybrid_bypass")
+
+# Estado estructural
+cat("Estado de Factibilidad:", sim_bypass$feasibility, "\n")
+cat("Carga total a cimentación:", sim_bypass$tank_sizing$total_gross_load_tons, "Toneladas\n")
+cat("Inversión Inicial:", scales::dollar(sim_bypass$capex_usd$total), "\n")
+```
+
+Visualicemos la solución arquitectónica viable:
+
+```{r plot_topo_hybrid}
+plot_topography(sim_bypass)
+```
+
+---
+
+## 5. Simulación de la Alternativa Tradicional: Baterías de Litio (LFP)
+
+La alternativa convencional para independizarse de la red CFE en horario punta consiste en instalar un Sistema de Almacenamiento de Energía con Baterías (BESS).
+
+Para alimentar las 3 motobombas (6.71 kW) durante las 14 horas nocturnas (93.9 kWh útiles) con un límite de descarga DoD del 85% y 90% de eficiencia, se requiere un banco de **122.8 kWh** de celdas LiFePO4:
+
+```{r sim_battery}
+sim_bess <- simulate_battery_system(escenario_cancun)
+
+cat("Capacidad Nominal Requerida:", sim_bess$battery_sizing$nameplate_capacity_kwh, "kWh\n")
+cat("Módulos Rack (5 kWh c/u):", sim_bess$battery_sizing$battery_rack_modules_5kwh, "unidades\n")
+cat("Inversión Inicial Baterías:", scales::dollar(sim_bess$capex_usd$total), "\n")
+```
+
+---
+
+## 6. Comparativa Estratégica Completa (`compare_scenarios`)
+
+La función de alto nivel `compare_scenarios()` orquesta las simulaciones físicas, el análisis de Ciclo de Vida (LCA) a 20 años bajo normas ISO 14040/44 y la evaluación financiera de flujo de caja descontado a 15 años:
+
+```{r comparison}
+comparativa <- compare_scenarios(escenario_cancun)
+print(comparativa)
+```
+
+---
+
+## 7. Análisis de Ciclo de Vida (LCA a 20 Años)
+
+El gráfico de emisiones acumuladas revela por qué el bypass gravitacional es ambientalmente superior:
+* Las baterías de litio sufren una sustitución completa obligatoria cada **6 años** debido a la degradación cíclica severa en clima cálido. Cada reemplazo induce un escalón de emisiones por extracción y refinado de minerales.
+* El tanque gravitacional y la estructura de concreto tienen una vida útil superior a 50 años, manteniendo su huella de carbono **plana** tras la construcción inicial.
+
+```{r plot_lca}
+plot_lca_emissions(comparativa)
+```
+
+---
+
+## 8. Evaluación Financiera y Periodo de Retorno (Payback)
+
+El flujo de caja acumulado compara el desembolso de capital y mantenimiento contra el gasto operativo baseline de la tarifa CFE GDMTH:
+
+```{r plot_payback}
+plot_financial_payback(comparativa)
+```
+
+Desglose de la inversión inicial de capital (CAPEX):
+
+```{r plot_capex}
+plot_capex_breakdown(comparativa)
+```
+
+---
+
+## 9. Conclusiones del Estudio
+
+1. **Inviabilidad de Gravedad Pura:** Intentar vencer la resistencia de 14 m.c.a. de un filtro de arena por gravedad nocturna exige una estructura civil de 500 toneladas a 15 metros, lo cual es técnica y financieramente absurdo.
+2. **Fracaso Económico de las Baterías:** El almacenamiento electroquímico (BESS) requiere \$85,382 USD iniciales más reemplazos de \$42,980 USD cada 6 años, imposibilitando el retorno de inversión (NPV negativo de -\$41,869 USD).
+3. **Superioridad del Bypass Híbrido:**
+   - **Inversión Moderada:** \$23,940 USD.
+   - **Retorno Rápido:** Payback en **2.1 años**.
+   - **Valor Creado:** VAN a 15 años de **+\$75,269 USD**.
+   - **Liderazgo Ecológico:** Ahorro de **53.0 Toneladas de CO2e** frente a baterías de litio y más de **500 Toneladas** frente a la red fósil convencional.

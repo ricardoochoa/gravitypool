@@ -1,0 +1,10 @@
+.Rhistory
+.Rdata
+.Ruserdata
+.Rproj.user/
+.DS_Store
+*.Rcheck/
+inst/doc/
+.DS_Store
+.AppleDouble
+.LSOverride

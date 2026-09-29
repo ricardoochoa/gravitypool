@@ -1,0 +1,41 @@
+{
+  "project_metadata": {
+    "name": "Alberca de Entrenamiento 25m - Cancún",
+    "location": "Cancún, Quintana Roo",
+    "peak_sun_hours": 5.2,
+    "topography_drop_m": 0.0,
+    "ambient_temp_avg_c": 28.0,
+    "exchange_rate_usd_mxn": 18.5
+  },
+  "pool_specs": {
+    "length_m": 25.0,
+    "width_m": 12.5,
+    "avg_depth_m": 1.35,
+    "total_volume_m3": 421.875,
+    "target_turnovers_per_day": 4.0,
+    "target_flow_m3_per_day": 1687.5,
+    "pipe_material": "PVC_Sch40",
+    "pipe_nominal_inch": 3.0,
+    "pipe_length_m": 45.0,
+    "filter_type": "sand_high_rate"
+  },
+  "current_system": {
+    "pumps_qty": 3,
+    "pump_power_hp_each": 3.0,
+    "pump_power_kw_total": 6.71,
+    "daily_operation_hours": 24,
+    "daily_energy_consumption_kwh": 161.04,
+    "estimated_tdh_m": 18.0,
+    "energy_tariff": "CFE_GDMTH_Peninsular",
+    "energy_cost_kwh_avg_mxn": 3.15,
+    "capacity_charge_kw_month_mxn": 446.0
+  },
+  "hybrid_bypass_specs": {
+    "day_filter_turnovers": 3.25,
+    "day_filter_hours": 8.0,
+    "night_bypass_hours": 14.0,
+    "night_buffer_tank_m3": 35.0,
+    "night_tank_height_m": 3.2,
+    "night_flow_m3_per_hour": 2.5
+  }
+}
